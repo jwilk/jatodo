@@ -1,0 +1,58 @@
+#!/bin/sh
+
+# Copyright © 2019 Jakub Wilk <jwilk@jwilk.net>
+# SPDX-License-Identifier: MIT
+
+set -e -u
+
+prog=${0##*/}
+
+bad_usage()
+{
+    printf 'Usage: %s [-e|TEXT...]\n' "$prog" >&2
+    exit 1
+}
+
+do_help()
+{
+    printf 'Usage:\n\n'
+    printf '  %s           print the items\n' "$prog"
+    printf '  %s TEXT...   append item\n' "$prog"
+    printf '  %s -e        edit items\n' "$prog"
+    printf '\n'
+    exit 0
+}
+
+mkdir700()
+{
+    (
+        umask 077 && mkdir -p "$datadir"
+    )
+}
+
+datadir=${XDG_DATA_HOME:-"$HOME/.local/share"}/"$prog"
+cmd=
+while getopts 'he' opt
+do
+    case "$opt" in
+        h) do_help;;
+        e) cmd=e;;
+        *) exit 1;;
+    esac
+done
+shift $((OPTIND - 1))
+if [ "$cmd" = e ]
+then
+    [ $# = 0 ] || bad_usage
+    mkdir700 "$datadir"
+    ${VISUAL:-${EDITOR:-editor}} "$datadir/todo"
+fi
+if [ $# = 0 ]
+then
+    cat "$datadir/todo"
+else
+    mkdir700 "$datadir"
+    printf '%s\n' "$@" >> "$datadir/todo"
+fi
+
+# vim:ts=4 sts=4 sw=4 et

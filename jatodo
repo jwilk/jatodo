@@ -45,7 +45,7 @@ if [ "$cmd" = e ]
 then
     [ $# = 0 ] || bad_usage
     mkdir700 "$datadir"
-    ${VISUAL:-${EDITOR:-editor}} "$datadir/todo"
+    exec ${VISUAL:-${EDITOR:-editor}} "$datadir/todo"
 fi
 if [ $# = 0 ]
 then

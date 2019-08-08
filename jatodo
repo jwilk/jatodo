@@ -5,7 +5,7 @@
 
 set -e -u
 
-prog=${0##*/}
+prog=jatodo
 
 bad_usage()
 {

@@ -49,7 +49,16 @@ then
 fi
 if [ $# = 0 ]
 then
-    cat "$datadir/todo"
+    if [ -n "${PAGER-}" ]
+    then
+        pager="$PAGER"
+    elif command -v pager > /dev/null
+    then
+        pager='pager'
+    else
+        pager='more'
+    fi
+    "$pager" "$datadir/todo"
 else
     mkdir700 "$datadir"
     printf '%s\n' "$@" >> "$datadir/todo"

@@ -30,6 +30,16 @@ mkdir700()
     )
 }
 
+lock()
+{
+    if ! flock -n "$1"
+    then
+        printf '%s: waiting for the lock...' "$prog" >&2
+        flock "$1" || exit 1
+        printf '\n' >&2
+    fi
+}
+
 datadir=${XDG_DATA_HOME:-"$HOME/.local/share"}/"$prog"
 cmd=
 while getopts 'he' opt
@@ -45,6 +55,8 @@ if [ "$cmd" = e ]
 then
     [ $# = 0 ] || bad_usage
     mkdir700 -p "$datadir"
+    exec 9>"$datadir/todo.lock"
+    lock 9
     exec ${VISUAL:-${EDITOR:-editor}} "$datadir/todo"
 fi
 if [ $# = 0 ]
@@ -61,6 +73,8 @@ then
     "$pager" "$datadir/todo"
 else
     mkdir700 -p "$datadir"
+    exec 9>"$datadir/todo.lock"
+    lock 9
     printf '%s\n' "$*" >> "$datadir/todo"
 fi
 

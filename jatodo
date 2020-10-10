@@ -24,11 +24,9 @@ do_help()
 }
 
 mkdir700()
-{
-    (
-        umask 077 && exec mkdir "$@"
-    )
-}
+(
+    umask 077 && exec mkdir "$@"
+)
 
 lock()
 {
